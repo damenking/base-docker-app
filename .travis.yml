@@ -1,0 +1,18 @@
+sudo: required
+services:
+    - docker
+
+before_install:
+    - docker build -t client_test_image -f ./client/Dockerfile.dev ./client
+
+script:
+    - docker run -e CI=true client_test_image npm run test
+
+after_success:
+    - docker build -t damenking/app-client ./client
+    - docker build -t damenking/app-nginx ./nginx
+    - docker build -t damenking/app-server ./server
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+    - docker push damenking/app-client
+    - docker push damenking/app-nginx
+    - docker push damenking/app-server

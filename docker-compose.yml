@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+    api:
+        build:
+            dockerfile: Dockerfile.dev
+            context: ./server
+        volumes:
+            - /srv/app/node_modules
+            - ./server:/srv/app
+        environment:
+            - PGUSER=postgres
+            - PGHOST=postgres
+            - PGDATABASE=postgres
+            - PGPASSWORD=postgres_password
+            - PGPORT=5432
+    client:
+        build:
+            dockerfile: Dockerfile.dev
+            context: ./client
+        volumes:
+            - /srv/app/node_modules
+            - ./client:/srv/app
+    nginx:
+        restart: always
+        build:
+            dockerfile: Dockerfile.dev
+            context: ./nginx
+        ports:
+            - '4000:80'
+    postgres:
+        image: 'postgres:12.1-alpine'
